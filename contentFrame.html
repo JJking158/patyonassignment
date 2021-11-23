@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!-- saved from url=(0215)https://tdsb.elearningontario.ca/content/enforced/20080531-BL_CWS_CHV2O1-3A_947407_2122Sem1/CHV2OU01/CHV2OU01A06/contentFrame.html?d2lSessionVal=Ahdp6sZn3yC7O6ZaczDwMUdkm&ou=20080531&d2lLegacyScorm=1&d2l_body_type=3 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="./jquery-1.11.1.min.js.download"></script>
+<script type="text/javascript" src="./scormWrapper.js.download"></script>
+<script type="text/javascript" language="JavaScript">
+ var nFindAPITries = 0;
+ var API = null;
+ var firstTime="false";
+
+function FindAPI(win) {
+ 	while ((win.API == null) && (win.parent != null) && (win.parent != win)) {
+ 	nFindAPITries ++;
+ 	if (nFindAPITries > 500) {
+ 		alert("Error in finding API -- too deeply nested.");
+ 	return null
+ 	}
+ 	win = win.parent
+ 	}
+ 	return win.API
+}
+ 
+function init() {
+	 if ((window.parent) && (window.parent != window)){
+	 	API = FindAPI(window.parent)
+	 }
+	 if ((API == null) && (window.opener != null)){
+	 	API = FindAPI(window.opener)
+	 }
+	 if (API == null) {
+	  alert("You have lost connection to the LMS.  Please hit refresh on your browser.")
+	 } 
+	 else {
+	 	API.LMSInitialize("")	
+	 
+		var dataFromScorm = API.LMSGetValue("cmi.suspend_data");
+	
+		if(dataFromScorm==""){
+			firstTime="true";		
+		}
+		else{			firstTime="false";
+			commit();
+		}
+	}
+
+	main.location.href  = "_content.html";	
+}
+function finish() {
+	 if (API != null) {
+		 commit();
+	 API.LMSFinish("")
+	 }
+}
+
+function commit(){
+	
+	var dataToSave="false";
+	API.LMSSetValue("cmi.suspend_data", dataToSave);	
+	
+	//********************SCORM's a Comin' *****************************************	
+}
+</script>
+
+<title></title>
+<script>function lti_launch( vars, target ) {
+						var query = '';
+						var new_tab = false;
+
+						for(var key in vars) {
+							if(query.length == 0) {
+								query += '?' + key + '=' + encodeURIComponent(vars[key]);
+							}
+							else {
+								query += '&' + key + '=' + encodeURIComponent(vars[key]);
+							}
+						}
+
+						var url = '/d2l/customization/pearsonlti/20080531/Launch' + query;(target == '_blank') ? window.open( url, '_blank' ) : location.replace( url );}</script><script src="./MathML.js.download"></script><script>document.addEventListener('DOMContentLoaded', function() { D2LMathML.DesktopInit('https://s.brightspace.com/lib/mathjax/2.7.4/MathJax.js?config=MML_HTMLorMML','https://s.brightspace.com/lib/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML%2cSafe','130',false); });</script><script>window.addEventListener('message', function(event) { 
+					if( !event.data ) {
+						return;
+					}
+
+					var params;
+					try {
+						params = JSON.parse( event.data );
+					}
+					catch {
+						return;
+					}
+					if( !params.subject || params.subject !== 'lti.frameResize' ) {
+						return;
+					}
+
+					const MAX_FRAME_HEIGHT = 10000
+					if( !params.height || params.height < 1 || params.height > MAX_FRAME_HEIGHT ) {
+						console.warn( 'Invalid height value received, aborting' );
+						return;
+					}
+					var el = document.getElementsByTagName( 'iframe' );
+					for ( var i=0; i < el.length; i++ ) {
+						if( el[i].contentWindow === event.source ) {
+							el[i].style.height = params.height + 'px';
+							el[i].style.width = '100%';
+							console.info( 'Setting iFrame height to ' + params.height );
+							console.info( 'Setting iFrame width to 100%' );
+						}
+					}
+				});</script></head> 
+<frameset rows="1px,600px" onload="init()" onunload="finish()">
+   <frame name="controller" src="./_blank.html" frameborder="0">
+   <frame name="main" src="./_blank(1).html" frameborder="0">
+   <noframes>
+   <body>
+      Your browser does not support frames.
+   </body>
+   </noframes>
+</frameset>
+
+</html>

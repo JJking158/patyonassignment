@@ -1,0 +1,204 @@
+// JavaScript Document
+
+var audioVisible=false;
+var firstTime=true;
+var API=null;
+var podcastPosition="-400px"
+
+$(function(){
+		//Checks to see if the scorm package returns that the file has been viewed before
+	if(window.parent.firstTime=="false"){
+		firstTime=false;	
+	}
+	else{
+		firstTime=true;	}
+	
+	//Displays the Introduction the first time the page is loaded.
+	if (window.parent.API==null){
+                 $('.onlyVisibleInLMS').css('visibility','hidden');
+	}
+		else{
+		if(localStorage.getItem("eportPath")) {
+			eportPath=localStorage.getItem("eportPath");
+			
+			// set the ID here
+			// after setting remember to remove it, if it's not required
+			localStorage.removeItem("eportPath");
+			
+      	}
+		else{	
+			var urlString=window.parent.location.href;
+			var position=urlString.indexOf("ou=");
+			var toNextSlash= urlString.substr(position+3);
+			var position2=toNextSlash.indexOf("&");
+			var ouNumber=urlString.substr(position+3,position2); 
+		
+			eportPath = "/d2l/ep/"+ouNumber+"/dashboard/index"; 
+			
+		}
+	}
+    $('[data-tooltip="true"]').tooltip();
+	if (firstTime){
+		setTimeout(function() 
+			  {
+				$('#introductionModal').modal('show');
+			  }
+		,2000);
+		//Sets the Banner image to full screen height the first time the page is loaded.
+		var winHeight = $(window).height();
+		$('.fullheight').css('height', winHeight);
+	}
+	$( "#introLoader" ).load( "_learningGoals.html div#introBox" );
+	 $( "#lgLoader" ).load( "_learningGoals.html div#learningGoalsBox" );
+	 $( "#scLoader" ).load( "_learningGoals.html div#successCriteriaBox" );
+	 $( "#expectationLoader" ).load( "_learningGoals.html div#expectationsBox" );
+     $( "#rubricLoader" ).load( "_rubric.html div#rubricBox" );
+	
+	//Code for progress bar
+	var winHeight = $(window).height(),
+  	docHeight = $(document).height();
+  	max = docHeight - winHeight;
+
+	$(".progress-bar").attr('max', max);
+	
+	var value = $(window).scrollTop();
+	$(".progress-bar").css('width', value);
+	
+	$(document).on('scroll', function() {
+		  value = $(window).scrollTop();
+		  value= (value/max)*100;
+		  var percent= value+"%";
+		  $(".progress-bar").css('width', percent);
+	});
+	
+	//End of progress bar code
+	
+	
+	
+	
+	var topoffset=70; //Accounts for the width of the nav bar when scrolling to the next section
+	
+	$('.carousel').carousel({
+		interval:0, //the carousel does not auto advance.
+		wrap:false //stops after last slide.
+	});
+	
+	// Closing the introduction modal opens the Learning Goal modal (first time only).
+	$('#introductionModal').on('hidden.bs.modal', function () {
+    	if(firstTime){		
+				setTimeout(function() 
+			  {
+				$('#lgModal').modal('show');
+			  }
+		,500);
+		}
+		
+	})
+	
+	// Closing the Learning Goal modal opens the Learning Skill modal (first time only).
+	$('#lgModal').on('hidden.bs.modal', function () {
+    	if(firstTime){
+			
+			firstTime=false;
+				setTimeout(function() 
+			  {
+				$('#lsModal').modal('show');
+			  }
+		,500);
+		}
+		
+	})
+	
+	
+	
+	$(".defocus").mouseup(function(){
+	  $(this).blur();
+	})//deselects the nav bar menus after being clicked
+	
+	$('body').scrollspy({
+		target: 'header .navbar',
+		offset: topoffset	
+	});//tracks body position to update nav bar 
+		
+	var hash = $(this).find('li.active a').attr('href');
+	if(hash!='#featured'){	
+		$('header nav').addClass('inbody');	//sets nav to fixed position when clicked
+		$('header .progress').addClass('inbody');	//sets progress bar to be displayed
+	}
+	else{
+		$('header nav').removeClass('inbody');	//resets full view of the navigation
+		$('header .progress').removeClass('inbody');	//hides the progress bar
+	}		
+	
+	
+	$('.navbar-fixed-top').on('activate.bs.scrollspy', function(){
+	  var hash = $(this).find('li.active a').attr('href');
+	  
+	  if(hash!='#featured'){
+		  $('header nav').addClass('inbody');//sets nav to fixed position when scrolled	
+		  $('header .progress').addClass('inbody');	//sets the progress bar to visible
+	  }
+	  else{
+		  $('header nav').removeClass('inbody');//resets full view of the navigation
+		  $('header .progress').removeClass('inbody');	//hides the progress bar
+	  }	
+	})
+	
+		
+	$('[data-toggle="popover"]').popover();	
+	
+	
+	//Use smooth scrolling when clicking on navigation
+  $('.navbar a[href*=#]:not([href=#])').click(function() {
+    if (location.pathname.replace(/^\//,'') === 
+      this.pathname.replace(/^\//,'') && 
+      location.hostname === this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target: $('[name=' + this.hash.slice(1) +']');
+      if (target.length) {
+        $('html,body').animate({
+          scrollTop: target.offset().top-topoffset+2
+        }, 500);
+        return false;
+      } //target.length
+    } //click function
+  }); //smooth scrolling
+});
+
+//This shows/hides the play controls for the audio
+function toggleAudio(){
+	if (audioVisible==true){
+		audioVisible=false;
+		$('.podcast').animate({left: podcastPosition, opacity:0}, 500);
+		
+	}
+	else{
+		audioVisible=true;
+		
+		$('.podcast').animate({left: "10px", opacity:1}, 500);
+
+	}
+	
+}
+
+//checks to see if the screen has touch events in order to fix the nav bar for mobile devices
+function isMobile() {
+	try{ document.createEvent("TouchEvent"); 
+		return true;
+	}
+	catch(e){ 
+		return false; 
+	}
+}
+
+function showExpectations(){
+	setTimeout(function() 
+			  {
+				$('#expectationModal').modal('show');
+			  }
+		,1000);	
+}
+
+function openEportfolio(){
+	window.open(eportPath, "_blank");
+}
